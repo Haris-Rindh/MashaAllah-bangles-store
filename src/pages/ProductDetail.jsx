@@ -29,7 +29,7 @@ export default function ProductDetail() {
 
   const handleOrder = () => {
     const msg = `*Order Enquiry*\n\nProduct: ${product.name}\nPrice: Rs.${product.price.toLocaleString()}\n\n📍 MashaAllah Bangles & Cosmetics\nMain Circular Road, She Shop Wali Gali, Shujabad`
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
+    window.open(`https://wa.me/923017506498?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   // Related products (same category, exclude current)

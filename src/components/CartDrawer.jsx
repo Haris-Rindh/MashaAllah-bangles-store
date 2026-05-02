@@ -95,7 +95,7 @@ export default function CartDrawer() {
             <button id="whatsapp-checkout-btn" className="btn-primary w-full"
               onClick={() => {
                 const lines = items.map(i => `• ${i.name} ×${i.qty} — Rs.${(i.price*i.qty).toLocaleString()}`).join('\n')
-                window.open(`https://wa.me/?text=${encodeURIComponent(`*MashaAllah Bangles & Cosmetics*\n\n${lines}\n\n*Total: Rs.${total.toLocaleString()}*\n\n📍 Main Circular Road, She Shop Wali Gali, Shujabad`)}`, '_blank')
+                window.open(`https://wa.me/923017506498?text=${encodeURIComponent(`*MashaAllah Bangles & Cosmetics*\n\n${lines}\n\n*Total: Rs.${total.toLocaleString()}*\n\n📍 Main Circular Road, She Shop Wali Gali, Shujabad`)}`, '_blank')
               }}>
               Order via WhatsApp 📱
             </button>

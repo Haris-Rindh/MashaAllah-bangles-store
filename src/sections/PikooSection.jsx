@@ -22,7 +22,7 @@ export default function PikooSection() {
   const submit = e => {
     e.preventDefault()
     const msg = `*Ladies Suit Pikoo Booking*\n\n👤 ${form.name}\n📞 ${form.phone}\n📐 ${form.size || '—'}\n📝 ${form.notes || '—'}\n\n📍 MashaAllah Bangles & Cosmetics\nMain Circular Road, She Shop Wali Gali, Shujabad`
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
+    window.open(`https://wa.me/923017506498?text=${encodeURIComponent(msg)}`, '_blank')
     setSent(true)
     setTimeout(() => setSent(false), 3000)
   }
