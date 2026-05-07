@@ -189,4 +189,5 @@ export const CATEGORIES = [
   { value: 'cosmetics', label: 'Cosmetics' },
   { value: 'perfumes',  label: 'Perfumes' },
   { value: 'jewellery', label: 'Jewellery' },
+  { value: 'pikoo',     label: 'Pikoo Service' },
 ]

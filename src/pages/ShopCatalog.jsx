@@ -1,23 +1,30 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { gsap } from 'gsap'
-import { PRODUCTS, CATEGORIES } from '../data/products'
+import { getAllProducts } from '../store/productStore'
+import { CATEGORIES } from '../data/products'
 import ProductCard from '../components/ProductCard'
 
 export default function ShopCatalog() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [active, setActive] = useState(searchParams.get('cat') || 'all')
-  const [search, setSearch] = useState('')
+  const [active, setActive]   = useState(searchParams.get('cat') || 'all')
+  const [search, setSearch]   = useState('')
 
   useEffect(() => {
     setActive(searchParams.get('cat') || 'all')
   }, [searchParams])
 
+  // Read fresh from unified store on every filter/search change
   const filtered = useMemo(() => {
-    let r = active === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === active)
+    const all = getAllProducts()
+    let r = active === 'all' ? all : all.filter(p => p.category === active)
     if (search.trim()) {
       const q = search.toLowerCase()
-      r = r.filter(p => p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q))
+      r = r.filter(p =>
+        p.name?.toLowerCase().includes(q) ||
+        p.desc?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q)
+      )
     }
     return r
   }, [active, search])
@@ -60,7 +67,7 @@ export default function ShopCatalog() {
               style={{ background: '#fff', border: '1.5px solid #E4D5C8', color: '#1C1412',
                 width: '220px', outline: 'none', transition: 'border-color 0.2s' }}
               onFocus={e => e.target.style.borderColor = '#C9906A'}
-              onBlur={e => e.target.style.borderColor = '#E4D5C8'}
+              onBlur={e  => e.target.style.borderColor = '#E4D5C8'}
             />
           </div>
         </div>
@@ -99,7 +106,7 @@ export default function ShopCatalog() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
               {filtered.map(p => (
-                <div key={p.id} className="cat-card">
+                <div key={p.id || p._id} className="cat-card">
                   <ProductCard product={p} />
                 </div>
               ))}

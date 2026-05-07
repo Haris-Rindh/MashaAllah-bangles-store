@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Edit2, Trash2, Search, Plus, Eye, Package } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
-import { getAllProducts, deleteProduct } from './adminStore'
-import { PRODUCTS } from '../../data/products'
+import { getAllProducts, deleteProduct } from '../../store/productStore'
 
 export default function ProductList() {
   const navigate = useNavigate()

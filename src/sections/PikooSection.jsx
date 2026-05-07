@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { WHATSAPP_NUMBER, STORE_NAME, STORE_ADDRESS } from '../config'
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -21,8 +22,8 @@ export default function PikooSection() {
 
   const submit = e => {
     e.preventDefault()
-    const msg = `*Ladies Suit Pikoo Booking*\n\n👤 ${form.name}\n📞 ${form.phone}\n📐 ${form.size || '—'}\n📝 ${form.notes || '—'}\n\n📍 MashaAllah Bangles & Cosmetics\nMain Circular Road, She Shop Wali Gali, Shujabad`
-    window.open(`https://wa.me/923017506498?text=${encodeURIComponent(msg)}`, '_blank')
+    const msg = `*Ladies Suit Pikoo Booking*\n\n👤 ${form.name}\n📞 ${form.phone}\n📐 ${form.size || '—'}\n📝 ${form.notes || '—'}\n\n📍 ${STORE_NAME}\n${STORE_ADDRESS}`
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank')
     setSent(true)
     setTimeout(() => setSent(false), 3000)
   }

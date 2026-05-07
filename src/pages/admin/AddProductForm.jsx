@@ -1,9 +1,16 @@
 import { useState } from 'react'
-import { UploadCloud, X, CheckCircle, ArrowLeft } from 'lucide-react'
+import { UploadCloud, X, CheckCircle, ArrowLeft, Loader2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { addProduct } from './adminStore'
+import { addProduct } from '../../store/productStore'
 
 const CATEGORIES = ['Bangles', 'Cosmetics', 'Perfumes', 'Jewellery', 'Pikoo Service']
+
+/** Convert a File object to a base64 data URL (persists in localStorage) */
+const toBase64 = file => new Promise(resolve => {
+  const reader = new FileReader()
+  reader.onload = () => resolve(reader.result)
+  reader.readAsDataURL(file)
+})
 
 export default function AddProductForm() {
   const navigate = useNavigate()
@@ -11,45 +18,54 @@ export default function AddProductForm() {
     name: '', description: '', category: 'Bangles',
     regularPrice: '', discountPrice: '', tag: 'New',
   })
-  const [previews, setPreviews] = useState([])
-  const [imageFiles, setImageFiles] = useState([])
-  const [saved, setSaved] = useState(false)
+  const [previews,    setPreviews]    = useState([])   // object URLs for preview
+  const [imageFiles,  setImageFiles]  = useState([])   // raw File objects
+  const [saved,       setSaved]       = useState(false)
+  const [loading,     setLoading]     = useState(false)
 
   const handleChange = e => setFormData({ ...formData, [e.target.name]: e.target.value })
 
   const handleImages = e => {
     const files = Array.from(e.target.files)
     if (imageFiles.length + files.length > 5) return alert('Maximum 5 images.')
-    setImageFiles(prev => [...prev, ...files])
-    setPreviews(prev => [...prev, ...files.map(f => URL.createObjectURL(f))])
+    setImageFiles(prev  => [...prev, ...files])
+    setPreviews(prev    => [...prev, ...files.map(f => URL.createObjectURL(f))])
   }
 
   const removeImg = i => {
     setImageFiles(prev => prev.filter((_, idx) => idx !== i))
-    setPreviews(prev => prev.filter((_, idx) => idx !== i))
+    setPreviews(prev   => prev.filter((_, idx) => idx !== i))
   }
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault()
-    if (previews.length === 0) return alert('Please add at least 1 image.')
+    if (imageFiles.length === 0) return alert('Please add at least 1 image.')
+    setLoading(true)
+
+    // Convert to base64 so images persist after page refresh
+    const base64Images = await Promise.all(imageFiles.map(toBase64))
+
+    const reg  = Number(formData.regularPrice)
+    const disc = formData.discountPrice ? Number(formData.discountPrice) : undefined
 
     addProduct({
-      id: `admin_${Date.now()}`,
-      _id: `admin_${Date.now()}`,
-      name: formData.name,
-      desc: formData.description,
-      longDesc: formData.description,
-      category: formData.category.toLowerCase().replace(' service',''),
-      tag: formData.tag,
-      price: Number(formData.regularPrice),
-      regularPrice: Number(formData.regularPrice),
-      discountPrice: formData.discountPrice ? Number(formData.discountPrice) : undefined,
-      discountPercent: formData.discountPrice
-        ? Math.round(((formData.regularPrice - formData.discountPrice) / formData.regularPrice) * 100)
-        : 0,
-      color: '#C9906A',
-      images: previews,          // object URLs work for this session
-      specs: { Category: formData.category, Price: `Rs. ${formData.regularPrice}` },
+      name:           formData.name,
+      desc:           formData.description,
+      longDesc:       formData.description,
+      description:    formData.description,
+      category:       formData.category.toLowerCase().replace(' service', ''),
+      tag:            formData.tag,
+      price:          disc || reg,
+      regularPrice:   reg,
+      discountPrice:  disc,
+      discountPercent: disc ? Math.round(((reg - disc) / reg) * 100) : 0,
+      color:          '#C9906A',
+      images:         base64Images,
+      specs:          {
+        Category: formData.category,
+        Price:    `Rs. ${reg.toLocaleString()}`,
+        ...(disc ? { 'Sale Price': `Rs. ${disc.toLocaleString()}` } : {}),
+      },
     })
 
     setSaved(true)
@@ -72,13 +88,12 @@ export default function AddProductForm() {
       {saved && (
         <div className="mb-6 flex items-center gap-3 p-4 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700">
           <CheckCircle className="w-5 h-5" />
-          <span className="font-medium">Product saved! Redirecting...</span>
+          <span className="font-medium">Product saved! Redirecting…</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit}
         className="bg-[#FDFBF7] p-6 md:p-10 rounded-2xl shadow-sm border border-[#E5D7CA]/60 relative overflow-hidden">
-        {/* Subtle glows */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#EAB8C8]/10 rounded-full blur-3xl pointer-events-none translate-x-1/3 -translate-y-1/3" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#C9906A]/10 rounded-full blur-3xl pointer-events-none -translate-x-1/3 translate-y-1/3" />
 
@@ -86,16 +101,15 @@ export default function AddProductForm() {
 
           {/* ── Left: Details ── */}
           <div className="space-y-5">
-            {[
-              { label: 'Product Name', name: 'name', type: 'text', placeholder: 'e.g. Bridal Kundan Set', required: true },
-            ].map(f => (
-              <div key={f.name}>
-                <label className="block text-sm font-medium text-[#8B7355] mb-1.5">{f.label}</label>
-                <input {...f} value={formData[f.name]} onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-white/70 border border-[#E5D7CA] focus:ring-2 focus:ring-[#C9906A]/40 focus:border-[#C9906A] focus:outline-none transition-all text-[#5C4D43] placeholder-[#BFAEA3]" />
-              </div>
-            ))}
+            {/* Product Name */}
+            <div>
+              <label className="block text-sm font-medium text-[#8B7355] mb-1.5">Product Name *</label>
+              <input name="name" value={formData.name} onChange={handleChange} required
+                placeholder="e.g. Bridal Kundan Set"
+                className="w-full px-4 py-3 rounded-xl bg-white/70 border border-[#E5D7CA] focus:ring-2 focus:ring-[#C9906A]/40 focus:border-[#C9906A] focus:outline-none transition-all text-[#5C4D43] placeholder-[#BFAEA3]" />
+            </div>
 
+            {/* Category */}
             <div>
               <label className="block text-sm font-medium text-[#8B7355] mb-1.5">Category</label>
               <select name="category" value={formData.category} onChange={handleChange}
@@ -104,6 +118,7 @@ export default function AddProductForm() {
               </select>
             </div>
 
+            {/* Tag */}
             <div>
               <label className="block text-sm font-medium text-[#8B7355] mb-1.5">Tag / Label</label>
               <select name="tag" value={formData.tag} onChange={handleChange}
@@ -114,9 +129,10 @@ export default function AddProductForm() {
               </select>
             </div>
 
+            {/* Prices */}
             <div className="grid grid-cols-2 gap-4">
               {[
-                { label: 'Regular Price (Rs.)', name: 'regularPrice', required: true },
+                { label: 'Regular Price (Rs.) *', name: 'regularPrice', required: true },
                 { label: 'Sale Price (Rs.) — optional', name: 'discountPrice', required: false },
               ].map(f => (
                 <div key={f.name}>
@@ -128,22 +144,26 @@ export default function AddProductForm() {
               ))}
             </div>
 
+            {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-[#8B7355] mb-1.5">Description</label>
+              <label className="block text-sm font-medium text-[#8B7355] mb-1.5">Description *</label>
               <textarea name="description" value={formData.description} onChange={handleChange}
-                required rows={5} placeholder="Describe the product details..."
+                required rows={5} placeholder="Describe the product details…"
                 className="w-full px-4 py-3 rounded-xl bg-white/70 border border-[#E5D7CA] focus:ring-2 focus:ring-[#C9906A]/40 focus:border-[#C9906A] focus:outline-none transition-all text-[#5C4D43] resize-none placeholder-[#BFAEA3]" />
             </div>
           </div>
 
           {/* ── Right: Images ── */}
           <div>
-            <label className="block text-sm font-medium text-[#8B7355] mb-2">Product Images (up to 5)</label>
+            <label className="block text-sm font-medium text-[#8B7355] mb-2">
+              Product Images (up to 5)
+              <span className="ml-1 text-xs text-[#BFAEA3]">— stored locally, no server needed</span>
+            </label>
             <label className={`flex flex-col items-center justify-center gap-3 border-2 border-dashed rounded-2xl p-8 min-h-[200px] cursor-pointer transition-all
               ${previews.length >= 1 ? 'border-[#C9906A]/40 bg-[#C9906A]/5' : 'border-[#E5D7CA] hover:bg-[#F5EDE0]/40'}`}>
               <UploadCloud className={`w-10 h-10 transition-colors ${previews.length >= 1 ? 'text-[#C9906A]' : 'text-[#BFAEA3]'}`} />
               <p className="text-sm text-[#8B7355]">Click to browse images</p>
-              <p className="text-xs text-[#BFAEA3]">JPG, PNG, WEBP · Max 5MB each</p>
+              <p className="text-xs text-[#BFAEA3]">JPG, PNG, WEBP · Max 2 MB each for best performance</p>
               <input type="file" multiple accept="image/*" className="hidden" onChange={handleImages} />
             </label>
 
@@ -178,9 +198,11 @@ export default function AddProductForm() {
             className="px-6 py-2.5 rounded-xl text-[#8B7355] hover:bg-[#F5EDE0] font-medium transition-colors">
             Cancel
           </button>
-          <button type="submit"
-            className="px-8 py-2.5 rounded-xl bg-[#C9906A] text-white hover:bg-[#b87d55] font-medium shadow-md shadow-[#C9906A]/20 transition-all flex items-center gap-2">
-            <CheckCircle className="w-4 h-4" /> Save Product
+          <button type="submit" disabled={loading}
+            className="px-8 py-2.5 rounded-xl bg-[#C9906A] text-white hover:bg-[#b87d55] font-medium shadow-md shadow-[#C9906A]/20 transition-all flex items-center gap-2 disabled:opacity-60">
+            {loading
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</>
+              : <><CheckCircle className="w-4 h-4" /> Save Product</>}
           </button>
         </div>
       </form>

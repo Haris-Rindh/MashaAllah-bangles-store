@@ -40,7 +40,8 @@ export function CartProvider({ children }) {
   const clearCart    = ()     => dispatch({ type: 'CLEAR' })
 
   const count = state.items.reduce((s, i) => s + i.qty, 0)
-  const total = state.items.reduce((s, i) => s + i.price * i.qty, 0)
+  // Use discountPrice when available so checkout total matches displayed price
+  const total = state.items.reduce((s, i) => s + (i.discountPrice || i.price) * i.qty, 0)
 
   return (
     <CartContext.Provider value={{ ...state, isOpen, setIsOpen, addToCart, removeFromCart, increment, decrement, clearCart, count, total }}>

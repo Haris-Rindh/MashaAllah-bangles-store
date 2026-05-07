@@ -13,8 +13,11 @@ export default function ProductCard({ product }) {
     setTimeout(() => setAdded(false), 1500)
   }
 
+  const displayPrice = product.discountPrice || product.price || product.regularPrice || 0
+  const displayDesc  = product.desc || product.description || ''
+
   return (
-    <Link to={`/product/${product.id}`}
+    <Link to={`/product/${product.id || product._id}`}
       className="product-card rounded-2xl overflow-hidden flex flex-col group"
       style={{ background: '#FFFFFF', border: '1px solid #E4D5C8', boxShadow: '0 1px 4px rgba(28,20,18,0.06)' }}>
 
@@ -41,14 +44,17 @@ export default function ProductCard({ product }) {
           {product.category}
         </p>
         <h3 className="font-display font-semibold text-sm text-charcoal leading-snug mb-1 flex-1">{product.name}</h3>
-        <p className="text-xs leading-relaxed mb-4 line-clamp-2" style={{ color: '#6B5548' }}>{product.desc}</p>
+        <p className="text-xs leading-relaxed mb-4 line-clamp-2" style={{ color: '#6B5548' }}>{displayDesc}</p>
 
         <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid #F0E8DF' }}>
           <div>
             <p className="text-[9px] tracking-wider uppercase" style={{ color: '#C4AEAB' }}>Price</p>
             <p className="font-display font-semibold text-sm" style={{ color: '#C9906A' }}>
-              Rs. {product.price.toLocaleString()}
+              Rs. {displayPrice.toLocaleString()}
             </p>
+            {product.discountPrice && product.regularPrice > product.discountPrice && (
+              <p className="text-[10px] line-through" style={{ color: '#C4AEAB' }}>Rs. {product.regularPrice.toLocaleString()}</p>
+            )}
           </div>
           <button id={`add-${product.id}`} onClick={handleAdd}
             className="text-xs font-medium tracking-wider uppercase px-3.5 py-2 rounded-full transition-all duration-250"

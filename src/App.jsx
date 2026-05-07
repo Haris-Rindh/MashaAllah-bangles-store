@@ -8,12 +8,13 @@ import Toast        from './components/Toast'
 import LandingPage  from './pages/LandingPage'
 import ShopCatalog  from './pages/ShopCatalog'
 import ProductDetail from './pages/ProductDetail'
+import NotFound     from './pages/NotFound'
 
 // Admin Components
-import AdminLayout from './pages/admin/AdminLayout'
-import ProductList from './pages/admin/ProductList'
-import AddProductForm from './pages/admin/AddProductForm'
-import OrderList from './pages/admin/OrderList'
+import AdminLayout     from './pages/admin/AdminLayout'
+import ProductList     from './pages/admin/ProductList'
+import AddProductForm  from './pages/admin/AddProductForm'
+import OrderList       from './pages/admin/OrderList'
 
 // Wrapper for Storefront so Navbar/Cart only show here
 function StoreFront() {
@@ -39,17 +40,19 @@ export default function App() {
             <Route path="/"            element={<LandingPage />} />
             <Route path="/shop"        element={<ShopCatalog />} />
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="*"            element={<NotFound />} />
           </Route>
 
           {/* Admin Panel Routes */}
           <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<ProductList />} />
-            <Route path="products" element={<ProductList />} />
+            <Route index           element={<ProductList />} />
+            <Route path="products"    element={<ProductList />} />
             <Route path="add-product" element={<AddProductForm />} />
-            <Route path="orders" element={<OrderList />} />
+            <Route path="orders"      element={<OrderList />} />
           </Route>
         </Routes>
       </CartProvider>
     </ErrorBoundary>
   )
 }
+

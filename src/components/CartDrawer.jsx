@@ -1,4 +1,5 @@
 import { useCart } from '../context/CartContext'
+import { WHATSAPP_NUMBER, STORE_NAME, STORE_ADDRESS } from '../config'
 
 export default function CartDrawer() {
   const { items, total, count, isOpen, setIsOpen, removeFromCart, increment, decrement, clearCart } = useCart()
@@ -94,8 +95,11 @@ export default function CartDrawer() {
             </div>
             <button id="whatsapp-checkout-btn" className="btn-primary w-full"
               onClick={() => {
-                const lines = items.map(i => `• ${i.name} ×${i.qty} — Rs.${(i.price*i.qty).toLocaleString()}`).join('\n')
-                window.open(`https://wa.me/923017506498?text=${encodeURIComponent(`*MashaAllah Bangles & Cosmetics*\n\n${lines}\n\n*Total: Rs.${total.toLocaleString()}*\n\n📍 Main Circular Road, She Shop Wali Gali, Shujabad`)}`, '_blank')
+                const lines = items.map(i => {
+                  const p = i.discountPrice || i.price
+                  return `• ${i.name} ×${i.qty} — Rs.${(p * i.qty).toLocaleString()}`
+                }).join('\n')
+                window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`*${STORE_NAME}*\n\n${lines}\n\n*Total: Rs.${total.toLocaleString()}*\n\n📍 ${STORE_ADDRESS}`)}`, '_blank')
               }}>
               Order via WhatsApp 📱
             </button>

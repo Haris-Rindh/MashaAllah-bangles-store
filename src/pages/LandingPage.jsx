@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 import { PRODUCTS } from '../data/products'
+import { WHATSAPP_NUMBER, STORE_NAME, STORE_ADDRESS } from '../config'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -354,7 +355,7 @@ export default function LandingPage() {
               <p className="text-sm leading-relaxed mb-8 font-light" style={{ color: '#6B5548' }}>
                 Professional edge-stitching and finishing for ladies suits. Drop in or book via WhatsApp for a seamless experience tailored just for you.
               </p>
-              <a href="https://wa.me/923017506498?text=I'd like to book a Pikoo service at MashaAllah Bangles"
+              <a href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("I'd like to book a Pikoo service at " + STORE_NAME)}`}
                 target="_blank" rel="noreferrer" className="btn-primary inline-block">
                 Book via WhatsApp 📱
               </a>
