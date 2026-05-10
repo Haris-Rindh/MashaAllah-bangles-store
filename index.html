@@ -1,16 +1,345 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="MashaAllah Bangles & Cosmetics — Your complete beauty destination in Shujabad. Bangles, Cosmetics, Imported Perfumes, Artificial Jewellery & Ladies Suit Pikoo service." />
-    <title>MashaAllah Bangles & Cosmetics</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MashaAllah Bangles & Cosmetics | Luxury Boutique</title>
+  <meta name="description" content="Discover MashaAllah's luxury bangles, jewellery, cosmetics, and perfumes. Premium feminine elegance crafted with care."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- PROMO BANNER -->
+<div id="promo-banner">
+  <span id="promo-text"></span>
+</div>
+
+<!-- UTILITY BAR -->
+<div id="utility-bar">
+  <div class="util-left"><a href="#">Stores</a> <span>·</span> <a href="#">Find a Store</a></div>
+  <div class="util-right"><a href="#">Login</a> <span>·</span> <a href="#">Wishlist ♡ (0)</a> <span>·</span> <a href="#">Bag (0)</a></div>
+</div>
+
+<!-- HEADER -->
+<header id="site-header">
+  <button id="menu-btn" aria-label="Menu">☰ <span>Menu</span></button>
+  <div id="logo">MashaAllah</div>
+  <button id="search-btn" aria-label="Search">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+  </button>
+</header>
+
+<!-- DRAWER OVERLAY -->
+<div id="drawer-overlay"></div>
+
+<!-- SIDE DRAWER -->
+<nav id="side-drawer">
+  <div id="drawer-header">
+    <span>Menu</span>
+    <button id="close-drawer" aria-label="Close">✕</button>
+  </div>
+  <ul id="drawer-menu">
+    <li class="has-sub">
+      <button class="drawer-item" data-cat="jewellery">💍 Jewellery <span class="chev">›</span></button>
+      <ul class="sub-menu" id="sub-jewellery">
+        <li>Bridal Heavy Jewellery Set</li><li>Light Bridal Jewellery Set</li><li>Gold Plated Necklace Set</li>
+        <li>Silver Jewellery Set</li><li>Artificial Jewellery Set</li><li>Pearl Necklace Set</li>
+        <li>Stone Studded Jewellery Set</li><li>Choker Necklace</li><li>Long Chain Necklace</li>
+        <li>Earrings (Stud / Jhumka)</li><li>Fancy Rings Set</li><li>Adjustable Rings</li>
+        <li>Anklets (Payal)</li><li>Nose Ring (Nath)</li><li>Hair Jewellery Pins</li>
+        <li>Wrist Chains</li><li>Bridal Jewellery Combo Set</li><li>Party Wear Jewellery</li>
+        <li>Daily Wear Jewellery</li><li>Kids Jewellery Set</li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <button class="drawer-item" data-cat="bangles">💍 Bangles Collection <span class="chev">›</span></button>
+      <ul class="sub-menu" id="sub-bangles">
+        <li>Bridal Heavy Bangles</li><li>Fancy Bangles Set</li><li>Glass Bangles (Chooriyan)</li>
+        <li>Metal Gold Bangles</li><li>Silver Bangles</li><li>Lac Bangles</li>
+        <li>Handmade Designer Bangles</li><li>Stone Bangles</li><li>Pearl Bangles</li>
+        <li>Silk Thread Bangles</li><li>Kids Bangles Set</li><li>Adjustable Bangles</li>
+        <li>Wedding Bangles Set</li><li>Daily Wear Bangles</li><li>Luxury Bangles Collection</li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <button class="drawer-item" data-cat="cosmetics">💄 Cosmetics <span class="chev">›</span></button>
+      <ul class="sub-menu" id="sub-cosmetics">
+        <li>Bridal Makeup Kit</li><li>Professional Makeup Kit</li><li>Matte Lipsticks</li>
+        <li>Gloss Lipsticks</li><li>Lip Tint Set</li><li>Foundation Range</li>
+        <li>Compact Powders</li><li>BB Cream</li><li>Concealer Set</li><li>Eyeliner Pen</li>
+        <li>Waterproof Mascara</li><li>Blush Palette</li><li>Highlighter Palette</li>
+        <li>Contour Kit</li><li>Makeup Brushes Set</li><li>Beauty Blender Pack</li>
+        <li>Nail Polish Set</li><li>Nail Care Kit</li><li>Face Wash Range</li>
+        <li>Face Creams</li><li>Whitening Lotion</li><li>Sunscreen Cream</li>
+        <li>Face Mask Set</li><li>Makeup Remover</li><li>Beauty Serum</li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <button class="drawer-item" data-cat="perfumes">🌸 Perfumes &amp; Fragrance <span class="chev">›</span></button>
+      <ul class="sub-menu" id="sub-perfumes">
+        <li>Arabic Luxury Perfume</li><li>Floral Perfume</li><li>Oud Perfume</li>
+        <li>Body Mist</li><li>Roll-On Attar</li><li>Long Lasting Perfume Spray</li>
+        <li>Unisex Perfume</li><li>Bridal Perfume Box</li><li>Pocket Mini Perfume</li>
+        <li>Musk Fragrance</li><li>Rose Perfume</li><li>Vanilla Perfume</li>
+        <li>Amber Perfume</li><li>Gift Perfume Set</li><li>Daily Wear Perfume</li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <button class="drawer-item" data-cat="baby">🍼 Baby Care <span class="chev">›</span></button>
+      <ul class="sub-menu" id="sub-baby">
+        <li>Baby Care Gift Kit</li><li>Baby Lotion</li><li>Baby Shampoo</li>
+        <li>Baby Oil</li><li>Baby Powder</li><li>Baby Soap Set</li><li>Baby Wipes Pack</li>
+        <li>Baby Diaper Pack</li><li>Feeding Bottle Set</li><li>Baby Cream</li>
+        <li>Rash Cream</li><li>Baby Bath Kit</li><li>Newborn Care Box</li>
+        <li>Baby Clothes Set</li><li>Baby Hygiene Kit</li>
+      </ul>
+    </li>
+    <li class="has-sub">
+      <button class="drawer-item" data-cat="clothing">👗 Clothing / Innerwear <span class="chev">›</span></button>
+      <ul class="sub-menu" id="sub-clothing">
+        <li>Ladies Bunyan</li><li>Bras Collection</li><li>Sports Bra</li>
+        <li>Innerwear Set</li><li>Undergarments Pack</li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<!-- HERO CAROUSEL -->
+<section id="hero-carousel">
+  <div class="hero-slide active" data-type="video">
+    <video autoplay loop muted playsinline class="hero-media">
+      <source src="assests/hero-section.mp4" type="video/mp4"/>
+    </video>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-prelabel">New Collection 2025</p>
+      <h1 class="hero-title">Timeless Elegance</h1>
+      <p class="hero-sub">Handcrafted luxury bangles &amp; jewellery for every occasion</p>
+      <a href="#" class="btn-primary">Explore Collection</a>
+    </div>
+  </div>
+  <div class="hero-slide" data-type="image">
+    <img src="assests/images (1).jpeg" class="hero-media" alt="Luxury Collection"/>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-prelabel">Bridal Collection</p>
+      <h1 class="hero-title">Bridal Grandeur</h1>
+      <p class="hero-sub">Exquisite bridal sets crafted for your most special day</p>
+      <a href="#" class="btn-primary">Shop Bridal</a>
+    </div>
+  </div>
+  <div class="hero-slide" data-type="image">
+    <img src="assests/images (2).jpeg" class="hero-media" alt="Cosmetics Collection"/>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-prelabel">Luxury Cosmetics</p>
+      <h1 class="hero-title">Glow Redefined</h1>
+      <p class="hero-sub">Premium makeup &amp; skincare for the modern woman</p>
+      <a href="#" class="btn-primary">Shop Cosmetics</a>
+    </div>
+  </div>
+  <button class="hero-arrow left" id="hero-prev" aria-label="Previous">‹</button>
+  <button class="hero-arrow right" id="hero-next" aria-label="Next">›</button>
+  <div id="hero-dots"></div>
+</section>
+
+<!-- SHOP BY CATEGORY -->
+<section id="shop-by-category">
+  <h2 class="section-title">Shop by Category</h2>
+  <div class="category-grid">
+    <a href="#" class="cat-card">
+      <div class="cat-img-wrap"><img src="assests/images (3).jpeg" alt="Jewellery"/></div>
+      <p class="cat-name">Jewellery</p>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-img-wrap"><img src="assests/images (4).jpeg" alt="Bangles"/></div>
+      <p class="cat-name">Bangles Collection</p>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-img-wrap"><img src="assests/images (5).jpeg" alt="Cosmetics"/></div>
+      <p class="cat-name">Cosmetics</p>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-img-wrap"><img src="assests/images (6).jpeg" alt="Perfumes"/></div>
+      <p class="cat-name">Perfumes &amp; Fragrance</p>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-img-wrap"><img src="assests/images (7).jpeg" alt="Baby Care"/></div>
+      <p class="cat-name">Baby Care</p>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-img-wrap"><img src="assests/images (8).jpeg" alt="Clothing"/></div>
+      <p class="cat-name">Clothing / Innerwear</p>
+    </a>
+  </div>
+</section>
+
+<!-- FEATURED COLLECTION -->
+<section id="featured-collection">
+  <div class="featured-img">
+    <img src="assests/images (9).jpeg" alt="Featured Collection"/>
+  </div>
+  <div class="featured-text">
+    <p class="feat-label">Exclusive Picks</p>
+    <h2 class="feat-title">The Bridal Edit</h2>
+    <p class="feat-desc">A curated selection of our most coveted bridal jewellery sets, bangles, and cosmetics — thoughtfully assembled for the modern bride.</p>
+    <a href="#" class="btn-primary">Discover Now</a>
+  </div>
+</section>
+
+<!-- NEW ARRIVALS -->
+<section id="new-arrivals">
+  <h2 class="section-title">New Arrivals</h2>
+  <div class="product-grid">
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img class="product-img-main" src="assests/images (1).jpeg" alt="Bridal Bangles Set"/>
+        <img class="product-img-hover" src="assests/images (4).jpeg" alt="Bridal Bangles Set hover"/>
+        <button class="btn-add-bag">Add to Bag</button>
+        <button class="wishlist-btn" aria-label="Wishlist">♡</button>
+      </div>
+      <p class="product-name">Bridal Heavy Bangles Set</p>
+      <p class="product-price">PKR 2,500</p>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img class="product-img-main" src="assests/images (2).jpeg" alt="Necklace Set"/>
+        <img class="product-img-hover" src="assests/images (5).jpeg" alt="Necklace Set hover"/>
+        <button class="btn-add-bag">Add to Bag</button>
+        <button class="wishlist-btn" aria-label="Wishlist">♡</button>
+      </div>
+      <p class="product-name">Gold Plated Necklace Set</p>
+      <p class="product-price">PKR 1,800</p>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img class="product-img-main" src="assests/images (3).jpeg" alt="Makeup Kit"/>
+        <img class="product-img-hover" src="assests/images (6).jpeg" alt="Makeup Kit hover"/>
+        <button class="btn-add-bag">Add to Bag</button>
+        <button class="wishlist-btn" aria-label="Wishlist">♡</button>
+      </div>
+      <p class="product-name">Bridal Makeup Kit</p>
+      <p class="product-price">PKR 3,200</p>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img class="product-img-main" src="assests/images (7).jpeg" alt="Perfume Set"/>
+        <img class="product-img-hover" src="assests/images (10).jpeg" alt="Perfume Set hover"/>
+        <button class="btn-add-bag">Add to Bag</button>
+        <button class="wishlist-btn" aria-label="Wishlist">♡</button>
+      </div>
+      <p class="product-name">Arabic Luxury Perfume</p>
+      <p class="product-price">PKR 1,500</p>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img class="product-img-main" src="assests/images (8).jpeg" alt="Glass Bangles"/>
+        <img class="product-img-hover" src="assests/images (1).jpeg" alt="Glass Bangles hover"/>
+        <button class="btn-add-bag">Add to Bag</button>
+        <button class="wishlist-btn" aria-label="Wishlist">♡</button>
+      </div>
+      <p class="product-name">Glass Bangles (Chooriyan)</p>
+      <p class="product-price">PKR 650</p>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img class="product-img-main" src="assests/images (9).jpeg" alt="Stone Bangles"/>
+        <img class="product-img-hover" src="assests/images (3).jpeg" alt="Stone Bangles hover"/>
+        <button class="btn-add-bag">Add to Bag</button>
+        <button class="wishlist-btn" aria-label="Wishlist">♡</button>
+      </div>
+      <p class="product-name">Stone Studded Bangles</p>
+      <p class="product-price">PKR 1,200</p>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img class="product-img-main" src="assests/images (10).jpeg" alt="Pearl Set"/>
+        <img class="product-img-hover" src="assests/images (2).jpeg" alt="Pearl Set hover"/>
+        <button class="btn-add-bag">Add to Bag</button>
+        <button class="wishlist-btn" aria-label="Wishlist">♡</button>
+      </div>
+      <p class="product-name">Pearl Necklace Set</p>
+      <p class="product-price">PKR 2,100</p>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <img class="product-img-main" src="assests/images (6).jpeg" alt="Silk Thread Bangles"/>
+        <img class="product-img-hover" src="assests/images (8).jpeg" alt="Silk Thread Bangles hover"/>
+        <button class="btn-add-bag">Add to Bag</button>
+        <button class="wishlist-btn" aria-label="Wishlist">♡</button>
+      </div>
+      <p class="product-name">Silk Thread Bangles</p>
+      <p class="product-price">PKR 850</p>
+    </div>
+  </div>
+</section>
+
+<!-- LIFESTYLE EDITORIAL BANNER -->
+<section id="editorial-banner">
+  <img src="assests/images (5).jpeg" alt="Lifestyle" class="editorial-bg"/>
+  <div class="editorial-overlay"></div>
+  <div class="editorial-content">
+    <p class="feat-label" style="color:#F8D7E3;">As Seen In</p>
+    <h2 style="font-family:var(--font-display);font-size:48px;color:#fff;margin:16px 0 12px;">Effortless Glamour</h2>
+    <p style="color:#fff;font-size:16px;max-width:500px;margin:0 auto 28px;">From daily wear to bridal luxury — discover styles that speak to every woman.</p>
+    <a href="#" class="btn-outline">Explore Lookbook</a>
+  </div>
+</section>
+
+<!-- JOIN THE CLUB -->
+<section id="join-club-banner">
+  <h2 class="join-title">Join Our Community</h2>
+  <p class="join-sub">Be the first to know about new collections, exclusive deals &amp; seasonal offers.</p>
+  <form class="join-form" onsubmit="return false;">
+    <input type="email" class="join-input" placeholder="Enter your email address" aria-label="Email"/>
+    <button type="submit" class="btn-primary">Subscribe</button>
+  </form>
+  <p class="join-legal">By subscribing you agree to our <a href="#">Privacy Policy</a>.</p>
+</section>
+
+<!-- FOOTER -->
+<footer id="site-footer">
+  <div class="footer-cols">
+    <div class="footer-col">
+      <h4 class="footer-heading">Customer Service</h4>
+      <ul><li><a href="#">FAQ</a></li><li><a href="#">Shipping &amp; Returns</a></li><li><a href="#">Size Guide</a></li><li><a href="#">Contact Us</a></li><li><a href="#">Track Order</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-heading">About Us</h4>
+      <ul><li><a href="#">Our Heritage</a></li><li><a href="#">Sustainability</a></li><li><a href="#">Careers</a></li><li><a href="#">Press Room</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-heading">Legal</h4>
+      <ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Cookie Policy</a></li><li><a href="#">Terms &amp; Conditions</a></li><li><a href="#">Accessibility</a></li></ul>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-heading">Follow Us</h4>
+      <div class="social-icons">
+        <a href="#" aria-label="Instagram" class="social-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="22" height="22"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" aria-label="Facebook" class="social-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="#" aria-label="Pinterest" class="social-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
+        </a>
+        <a href="#" aria-label="YouTube" class="social-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.4a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon fill="#7A3B52" points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
+        </a>
+        <a href="#" aria-label="TikTok" class="social-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; 2025 MashaAllah Bangles &amp; Cosmetics. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
 </html>
