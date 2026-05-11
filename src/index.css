@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-swa-dark antialiased font-body;
+    overflow-x: hidden;
+  }
+  
+  /* Focus rings for accessibility without breaking luxury look */
+  :focus-visible {
+    @apply outline-none ring-1 ring-swa-dark ring-offset-2;
+  }
+}
+
+@layer components {
+  /* ── Typography ────────────────────────────────────────── */
+  .heading-1 { @apply font-display text-4xl lg:text-6xl text-swa-dark; }
+  .heading-2 { @apply font-display text-2xl lg:text-4xl text-swa-dark; }
+
+  /* ── Hero Slides ─────────────────────────────────────── */
+  .hero-slide {
+    @apply absolute inset-0 opacity-0 transition-opacity duration-1000 z-0;
+  }
+  .hero-slide.active {
+    @apply opacity-100 z-10;
+  }
+
+  /* ── Mega menu ───────────────────────────────────────── */
+  .mega-menu {
+    @apply fixed left-0 right-0 bg-white shadow-xl border-t border-gray-200 z-[999];
+    animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .mega-menu::before { content: ''; position: absolute; top: -24px; left: 0; right: 0; height: 24px; }
+  
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Product Card ────────────────────────────────────── */
+  .prod-img-wrap {
+    @apply bg-swa-gray/50 relative overflow-hidden aspect-[4/5];
+  }
+  .prod-img-main {
+    @apply absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-luxury;
+  }
+  .prod-img-hover {
+    @apply absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 ease-luxury scale-105;
+  }
+  .prod-card:hover .prod-img-main {
+    @apply opacity-0;
+  }
+  .prod-card:hover .prod-img-hover {
+    @apply opacity-100 scale-100;
+  }
+
+  /* Add to bag button sliding up */
+  .prod-bag {
+    @apply absolute bottom-0 left-0 right-0 bg-swa-dark text-white text-[10px] tracking-[.15em] font-bold uppercase py-4
+           translate-y-full opacity-0 transition-all duration-300 ease-luxury
+           hover:bg-black/90;
+  }
+  .prod-card:hover .prod-bag {
+    @apply translate-y-0 opacity-100;
+  }
+}
+
+@layer utilities {
+  .ease-luxury {
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+/* Minimal Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: #F4F4F4;
+}
+::-webkit-scrollbar-thumb {
+  background: #1A1A1A;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #000000;
+}
