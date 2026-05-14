@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Store from '../store'
 
+const SUBCATS = ['jewellery','bangles','cosmetics','perfumes','baby','clothing']
 const CATS = ['jewellery','bangles','cosmetics','perfumes','baby','clothing']
 const EMPTY = { name:'',category:'bangles',subcategory:'',price:'',originalPrice:'',image:'',image2:'',description:'',badge:'',inStock:true,featured:false }
 
@@ -80,7 +81,7 @@ export default function AdminProducts() {
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="col-span-2"><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Name *</label><input className={inp} value={form.name} onChange={e=>setF('name',e.target.value)} placeholder="Product name"/></div>
               <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Category</label><select className={inp} value={form.category} onChange={e=>setF('category',e.target.value)}>{CATS.map(c=><option key={c} value={c} className="capitalize">{c}</option>)}</select></div>
-              <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Subcategory</label><input className={inp} value={form.subcategory} onChange={e=>setF('subcategory',e.target.value)}/></div>
+              <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">CSubcategory</label><select className={inp} value={form.category} onChange={e=>setF('category',e.target.value)}>{SUBCATS.map(c=><option key={c} value={c} className="capitalize">{c}</option>)}</select></div>
               <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Price (PKR) *</label><input type="number" className={inp} value={form.price} onChange={e=>setF('price',e.target.value)}/></div>
               <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Original Price</label><input type="number" className={inp} value={form.originalPrice} onChange={e=>setF('originalPrice',e.target.value)}/></div>
               <div className="col-span-2"><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Main Image</label><input className={inp} value={form.image} onChange={e=>setF('image',e.target.value)} placeholder="images (1).jpeg"/></div>
