@@ -38,7 +38,7 @@ function searchProducts(q)  { const t=q.toLowerCase(); return getProducts().filt
 
 function getCart()    { return JSON.parse(localStorage.getItem(KEYS.cart)||'[]'); }
 function saveCart(c)  { localStorage.setItem(KEYS.cart, JSON.stringify(c)); }
-function addToCart(id,qty=1){ const cart=getCart(); const i=cart.findIndex(x=>x.id===id); if(i>-1)cart[i].qty+=qty; else{const p=getProductById(id);if(p)cart.push({id:p.id,name:p.name,price:p.price,image:p.image,qty});} saveCart(cart); }
+function addToCart(id,qty=1){ const cart=getCart(); const i=cart.findIndex(x=>x.id===id); if(i>-1)cart[i].qty+=qty; else{const p=getProductById(id);if(p)cart.push({id:p.id,name:p.name,price:p.price,image:p.image,qty,category:p.category});} saveCart(cart); }
 function removeFromCart(id){ saveCart(getCart().filter(i=>i.id!==id)); }
 function updateQty(id,qty){ if(qty<1)return removeFromCart(id); saveCart(getCart().map(i=>i.id===id?{...i,qty}:i)); }
 function cartTotal()  { return getCart().reduce((s,i)=>s+i.price*i.qty,0); }
@@ -53,7 +53,7 @@ function getWishlist()    { return JSON.parse(localStorage.getItem(KEYS.wishlist
 function toggleWishlist(id){ const w=getWishlist(); const i=w.indexOf(id); if(i>-1)w.splice(i,1);else w.push(id); localStorage.setItem(KEYS.wishlist,JSON.stringify(w)); return i===-1; }
 function isWishlisted(id) { return getWishlist().includes(id); }
 
-function buildWAOrder(customer,cart){ const items=cart.map(i=>`• ${i.name} x${i.qty} = PKR ${(i.price*i.qty).toLocaleString()}`).join('\n'); const total=cart.reduce((s,i)=>s+i.price*i.qty,0); const msg=`🌸 *New Order — MashaAllah Bangles & Cosmetic*\n\n*Customer:* ${customer.name}\n*Phone:* ${customer.phone}\n*Address:* ${customer.address}, ${customer.city}\n\n*Items:*\n${items}\n\n*Total: PKR ${total.toLocaleString()}*\n\n_Order placed via website_`; return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`; }
+function buildWAOrder(customer,cart){ const baseUrl = 'https://mashallahbanglesstore.vercel.app'; const items=cart.map(i=>{ const imgUrl = (i.image && i.image.startsWith('data:')) ? '' : `\n  Image: ${baseUrl}/${i.image}`; return `• ${i.name} x${i.qty} = PKR ${(i.price*i.qty).toLocaleString()}${imgUrl}` }).join('\n\n'); const total=cart.reduce((s,i)=>s+i.price*i.qty,0); const msg=`🌸 *New Order — MashaAllah Bangles & Cosmetic*\n\n*Customer:* ${customer.name}\n*Phone:* ${customer.phone}\n*Address:* ${customer.address}, ${customer.city}\n\n*Items:*\n${items}\n\n*Total: PKR ${total.toLocaleString()}*\n\n_Order placed via website_`; return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`; }
 
 export const fmt      = n => 'PKR ' + Number(n).toLocaleString()
 export const discount = (orig,sale) => orig>sale ? Math.round((1-sale/orig)*100)+'% off' : ''

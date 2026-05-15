@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
-import { fmt } from '../store'
+import Store, { fmt } from '../store'
 
 export default function Cart() {
   const { cartItems, count, total, removeFromCart, updateQty } = useCart()
@@ -21,21 +21,27 @@ export default function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-10">
           {/* Items */}
           <div>
-            {cartItems.map(item => (
-              <div key={item.id} className="grid grid-cols-[80px_1fr_auto] sm:grid-cols-[96px_1fr_auto] gap-4 sm:gap-6 items-center py-6 border-b border-gray-100">
-                <img src={`/${item.image}`} alt={item.name} className="w-full aspect-[4/5] object-cover bg-swa-gray"/>
-                <div>
-                  <p className="text-[11px] uppercase tracking-widest text-swa-dark font-bold mb-1.5">{item.name}</p>
-                  <p className="text-sm font-body text-swa-text mb-4">{fmt(item.price)}</p>
-                  <div className="flex items-center border border-gray-300 w-fit">
-                    <button aria-label="Decrease quantity" onClick={() => updateQty(item.id, item.qty-1)} className="w-10 h-10 text-swa-dark text-lg hover:bg-swa-gray transition-colors">−</button>
-                    <span className="w-8 text-center text-sm font-medium text-swa-dark" aria-label="Quantity">{item.qty}</span>
-                    <button aria-label="Increase quantity" onClick={() => updateQty(item.id, item.qty+1)} className="w-10 h-10 text-swa-dark text-lg hover:bg-swa-gray transition-colors">+</button>
+            {cartItems.map(item => {
+              const product = Store.getProductById(item.id);
+              const isBangles = product?.category === 'bangles' || item.category === 'bangles';
+              const step = isBangles ? 0.5 : 1;
+              const minQty = isBangles ? 0.5 : 1;
+              return (
+                <div key={item.id} className="grid grid-cols-[80px_1fr_auto] sm:grid-cols-[96px_1fr_auto] gap-4 sm:gap-6 items-center py-6 border-b border-gray-100">
+                  <img src={`/${item.image}`} alt={item.name} className="w-full aspect-[4/5] object-cover bg-swa-gray"/>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-widest text-swa-dark font-bold mb-1.5">{item.name} {isBangles && <span className="text-[9px] text-gray">(Dozens)</span>}</p>
+                    <p className="text-sm font-body text-swa-text mb-4">{fmt(item.price)}</p>
+                    <div className="flex items-center border border-gray-300 w-fit">
+                      <button aria-label="Decrease quantity" onClick={() => updateQty(item.id, Math.max(minQty, item.qty - step))} className="w-10 h-10 text-swa-dark text-lg hover:bg-swa-gray transition-colors">−</button>
+                      <span className="w-8 text-center text-sm font-medium text-swa-dark" aria-label="Quantity">{item.qty}</span>
+                      <button aria-label="Increase quantity" onClick={() => updateQty(item.id, item.qty + step)} className="w-10 h-10 text-swa-dark text-lg hover:bg-swa-gray transition-colors">+</button>
+                    </div>
                   </div>
+                  <button aria-label={`Remove ${item.name} from bag`} onClick={() => removeFromCart(item.id)} className="text-gray/40 text-xl hover:text-swa-dark transition-colors self-start mt-2">✕</button>
                 </div>
-                <button aria-label={`Remove ${item.name} from bag`} onClick={() => removeFromCart(item.id)} className="text-gray/40 text-xl hover:text-swa-dark transition-colors self-start mt-2">✕</button>
-              </div>
-            ))}
+              );
+            })}
           </div>
           {/* Summary */}
           <div className="bg-swa-gray/30 border border-gray-200 p-8 h-fit lg:sticky lg:top-28">

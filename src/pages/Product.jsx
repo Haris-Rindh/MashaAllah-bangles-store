@@ -73,11 +73,13 @@ export default function Product() {
 
           {/* Qty */}
           <div className="flex items-center gap-6 mb-8">
-            <span className="text-[10px] uppercase tracking-[.2em] text-swa-dark font-bold">Quantity</span>
+            <span className="text-[10px] uppercase tracking-[.2em] text-swa-dark font-bold">
+              {product.category === 'bangles' ? 'Quantity (Dozens)' : 'Quantity'}
+            </span>
             <div className="flex items-center border border-gray-300">
-              <button onClick={() => setQty(q => Math.max(1,q-1))} className="w-12 h-12 text-swa-dark text-lg hover:bg-swa-gray transition-colors">−</button>
+              <button onClick={() => setQty(q => Math.max(product.category === 'bangles' ? 0.5 : 1, q - (product.category === 'bangles' ? 0.5 : 1)))} className="w-12 h-12 text-swa-dark text-lg hover:bg-swa-gray transition-colors">−</button>
               <span className="w-12 text-center text-sm font-medium text-swa-dark">{qty}</span>
-              <button onClick={() => setQty(q => q+1)} className="w-12 h-12 text-swa-dark text-lg hover:bg-swa-gray transition-colors">+</button>
+              <button onClick={() => setQty(q => q + (product.category === 'bangles' ? 0.5 : 1))} className="w-12 h-12 text-swa-dark text-lg hover:bg-swa-gray transition-colors">+</button>
             </div>
           </div>
 
