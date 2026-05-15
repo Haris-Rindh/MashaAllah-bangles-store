@@ -1,6 +1,15 @@
 // localStorage-based store — no backend required
-const KEYS = { products:'mab_products', cart:'mab_cart', orders:'mab_orders', wishlist:'mab_wishlist' }
+const KEYS = { products:'mab_products', cart:'mab_cart', orders:'mab_orders', wishlist:'mab_wishlist', categories:'mab_categories' }
 export const WHATSAPP = '923017506498'
+
+const DEFAULT_CATS = [
+  { id: 'cat1', slug: 'jewellery', label: 'Jewellery', subcats: [{slug:'bridal-heavy',label:'Bridal Heavy Set'},{slug:'light-bridal',label:'Light Bridal Set'},{slug:'gold-necklace',label:'Gold Necklace'},{slug:'silver',label:'Silver Jewellery'},{slug:'pearl-necklace',label:'Pearl Necklace'},{slug:'stone-studded',label:'Stone Studded'},{slug:'choker',label:'Choker Necklace'},{slug:'long-chain',label:'Long Chain'},{slug:'stud',label:'Stud Earrings'},{slug:'jhumka',label:'Jhumka Earrings'},{slug:'fancy-rings',label:'Fancy Rings'},{slug:'anklets',label:'Anklets (Payal)'},{slug:'nose-ring',label:'Nose Ring (Nath)'},{slug:'kids',label:'Kids Jewellery'}] },
+  { id: 'cat2', slug: 'bangles', label: 'Bangles', subcats: [{slug:'bridal-heavy',label:'Bridal Heavy'},{slug:'fancy',label:'Fancy Set'},{slug:'wedding',label:'Wedding Bangles'},{slug:'luxury',label:'Luxury'},{slug:'designer',label:'Designer'},{slug:'glass',label:'Glass (Chooriyan)'},{slug:'metal-gold',label:'Metal Gold'},{slug:'silver',label:'Silver'},{slug:'lac',label:'Lac Bangles'},{slug:'stone',label:'Stone'},{slug:'silk',label:'Silk Thread'},{slug:'daily',label:'Daily Wear'},{slug:'adjustable',label:'Adjustable'},{slug:'kids',label:'Kids'}] },
+  { id: 'cat3', slug: 'cosmetics', label: 'Cosmetics', subcats: [{slug:'bridal-kit',label:'Bridal Kit'},{slug:'pro-kit',label:'Pro Kit'},{slug:'foundation',label:'Foundation'},{slug:'compact',label:'Compact Powder'},{slug:'concealer',label:'Concealer'},{slug:'matte-lip',label:'Matte Lipsticks'},{slug:'gloss',label:'Gloss'},{slug:'eyeliner',label:'Eyeliner'},{slug:'mascara',label:'Mascara'},{slug:'blush',label:'Blush'},{slug:'face-wash',label:'Face Wash'},{slug:'creams',label:'Face Creams'},{slug:'lotion',label:'Whitening Lotion'},{slug:'sunscreen',label:'Sunscreen'},{slug:'serum',label:'Beauty Serum'}] },
+  { id: 'cat4', slug: 'perfumes', label: 'Perfumes', subcats: [{slug:'arabic',label:'Arabic Luxury'},{slug:'oud',label:'Oud Perfume'},{slug:'bridal-box',label:'Bridal Box'},{slug:'gift-set',label:'Gift Set'},{slug:'floral',label:'Floral'},{slug:'rose',label:'Rose'},{slug:'vanilla',label:'Vanilla'},{slug:'body-mist',label:'Body Mist'},{slug:'attar',label:'Roll-On Attar'},{slug:'pocket',label:'Pocket Mini'},{slug:'unisex',label:'Unisex'},{slug:'daily',label:'Daily Spray'}] },
+  { id: 'cat5', slug: 'baby', label: 'Baby Care', subcats: [{slug:'lotion',label:'Baby Lotion'},{slug:'shampoo',label:'Baby Shampoo'},{slug:'oil',label:'Baby Oil'},{slug:'powder',label:'Baby Powder'},{slug:'soap',label:'Baby Soap'},{slug:'gift-kit',label:'Gift Kit'},{slug:'bath-kit',label:'Bath Kit'},{slug:'newborn',label:'Newborn Box'},{slug:'wipes',label:'Baby Wipes'},{slug:'diaper',label:'Diaper Pack'}] },
+  { id: 'cat6', slug: 'clothing', label: 'Clothing', subcats: [{slug:'bunyan',label:'Ladies Bunyan'},{slug:'bras',label:'Bras Collection'},{slug:'sports-bra',label:'Sports Bra'},{slug:'innerwear-set',label:'Innerwear Set'},{slug:'undergarments',label:'Undergarments'}] }
+]
 
 const SEED = [
   { id:'p1', name:'Bridal Heavy Bangles Set',  category:'bangles',    subcategory:'bridal-heavy',  price:2500, originalPrice:3000, image:'images (1).jpeg', image2:'images (4).jpeg', description:'Exquisite bridal heavy bangles with intricate gold-toned design.', inStock:true, featured:true,  badge:'Bestseller' },
@@ -14,6 +23,9 @@ const SEED = [
   { id:'p9', name:'Lac Bangles',               category:'bangles',    subcategory:'lac',           price:750,  originalPrice:900,  image:'images (4).jpeg', image2:'images (9).jpeg', description:'Beautiful traditional lac bangles with mirror work.',               inStock:true, featured:false              },
   { id:'p10',name:'Matte Lipstick Set',        category:'cosmetics',  subcategory:'matte-lip',     price:950,  originalPrice:1200, image:'images (5).jpeg', image2:'images (3).jpeg', description:'Long-wearing matte lipstick set in 6 gorgeous shades.',            inStock:true, featured:false              },
 ]
+
+function getCategories() { const s = localStorage.getItem(KEYS.categories); if(!s){localStorage.setItem(KEYS.categories,JSON.stringify(DEFAULT_CATS));return DEFAULT_CATS;} return JSON.parse(s); }
+function saveCategories(c) { localStorage.setItem(KEYS.categories, JSON.stringify(c)); }
 
 function getProducts()  { const s = localStorage.getItem(KEYS.products); if(!s){localStorage.setItem(KEYS.products,JSON.stringify(SEED));return SEED;} return JSON.parse(s); }
 function saveProducts(l){ localStorage.setItem(KEYS.products, JSON.stringify(l)); }
@@ -47,4 +59,4 @@ export const fmt      = n => 'PKR ' + Number(n).toLocaleString()
 export const discount = (orig,sale) => orig>sale ? Math.round((1-sale/orig)*100)+'% off' : ''
 export const img      = name => `/${name}`   // images served from public (assests folder)
 
-export default { getProducts,addProduct,updateProduct,deleteProduct,getProductById,getByCategory,searchProducts,getCart,addToCart,removeFromCart,updateQty,cartTotal,cartCount,clearCart,getOrders,saveOrder,updateStatus,getWishlist,toggleWishlist,isWishlisted,buildWAOrder,fmt,discount,img }
+export default { getCategories,saveCategories,getProducts,addProduct,updateProduct,deleteProduct,getProductById,getByCategory,searchProducts,getCart,addToCart,removeFromCart,updateQty,cartTotal,cartCount,clearCart,getOrders,saveOrder,updateStatus,getWishlist,toggleWishlist,isWishlisted,buildWAOrder,fmt,discount,img }

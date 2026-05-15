@@ -26,7 +26,9 @@ export default function Product() {
     </div>
   )
 
-  const imgs    = [product.image, product.image2 || product.image]
+  const imgs = product.images?.length > 0 
+    ? product.images 
+    : [product.image, product.image2 || product.image];
   const wished  = wishlist.includes(product.id)
   const related = Store.getByCategory(product.category).filter(p => p.id !== product.id).slice(0, 4)
 
@@ -45,7 +47,7 @@ export default function Product() {
           <div className="bg-swa-gray/30 aspect-[3/4] overflow-hidden mb-4 cursor-zoom-in">
             <img src={`/${imgs[imgIdx]}`} alt={product.name} className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"/>
           </div>
-          <div className="flex gap-3">
+          <div className="flex gap-3 flex-wrap mt-4">
             {imgs.map((img, i) => (
               <button key={i} onClick={() => setImg(i)} className={`w-20 h-24 overflow-hidden border transition-colors ${imgIdx===i ? 'border-swa-dark' : 'border-transparent hover:border-gray-300'}`}>
                 <img src={`/${img}`} alt={`view ${i+1}`} className="w-full h-full object-cover"/>

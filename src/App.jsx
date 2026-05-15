@@ -13,6 +13,7 @@ import Wishlist from './pages/Wishlist'
 import AdminLayout   from './admin/AdminLayout'
 import Dashboard     from './admin/Dashboard'
 import AdminProducts from './admin/AdminProducts'
+import AdminCategories from './admin/AdminCategories'
 import AdminOrders   from './admin/AdminOrders'
 
 import { useEffect } from 'react'
@@ -33,6 +34,14 @@ function PageTitle() {
     const base = titles[loc.pathname] || 'MashaAllah Bangles & Cosmetic'
     document.title = base
   }, [loc.pathname])
+  return null
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
   return null
 }
 
@@ -61,11 +70,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <PageTitle />
+      <ScrollToTop />
       <CartProvider>
         <Routes>
           <Route path="/admin" element={<AdminLayout/>}>
             <Route index           element={<Dashboard/>}/>
             <Route path="products" element={<AdminProducts/>}/>
+            <Route path="categories" element={<AdminCategories/>}/>
             <Route path="orders"   element={<AdminOrders/>}/>
           </Route>
           <Route path="/*" element={<StoreFront/>}/>

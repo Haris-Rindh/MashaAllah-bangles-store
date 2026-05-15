@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import Store from '../store'
 
-const SUBCATS = ['jewellery','bangles','cosmetics','perfumes','baby','clothing']
-const CATS = ['jewellery','bangles','cosmetics','perfumes','baby','clothing']
-const EMPTY = { name:'',category:'bangles',subcategory:'',price:'',originalPrice:'',image:'',image2:'',description:'',badge:'',inStock:true,featured:false }
+const EMPTY = { name:'',category:'bangles',subcategory:'',price:'',originalPrice:'',images:['',''],description:'',badge:'',inStock:true,featured:false }
 
 export default function AdminProducts() {
+  const dynamicCats = Store.getCategories()
+  const CATS = dynamicCats.map(c => c.slug)
+  const SUBCATS_MAP = dynamicCats.reduce((acc, c) => {
+    acc[c.slug] = c.subcats
+    return acc
+  }, {})
   const [products, setP]  = useState(Store.getProducts())
   const [q, setQ]         = useState('')
   const [cat, setCat]     = useState('')
@@ -16,15 +20,103 @@ export default function AdminProducts() {
   const refresh = () => setP(Store.getProducts())
   const setF = (k,v) => setForm(f=>({...f,[k]:v}))
 
-  function openAdd()    { setForm(EMPTY); setId(null); setModal(true) }
-  function openEdit(p)  { setForm({...p}); setId(p.id); setModal(true) }
+  function openAdd() { setForm({...EMPTY, images:['','']}); setId(null); setModal(true) }
+  
+  function openEdit(p) {
+    // Normalize images array for existing products that only have image and image2
+    const imgs = p.images ? [...p.images] : [p.image || '', p.image2 || ''];
+    setForm({...p, images: imgs}); 
+    setId(p.id); 
+    setModal(true);
+  }
+
   function save() {
     if (!form.name||!form.price) { alert('Name and price required'); return }
     const data = { ...form, price:+form.price, originalPrice:+form.originalPrice||0 }
+    
+    // Clean up empty images
+    data.images = data.images.filter(img => img.trim() !== '');
+    
+    // Fallback sync for backwards compatibility with the rest of the app (Cart, ProductCard)
+    data.image = data.images[0] || '';
+    data.image2 = data.images[1] || '';
+
     if (editId) Store.updateProduct(editId, data); else Store.addProduct(data)
     refresh(); setModal(false)
   }
+  
   function del() { if (!confirm('Delete?')) return; Store.deleteProduct(editId); refresh(); setModal(false) }
+
+  function addImageField() {
+    if (form.images.length >= 6) return;
+    setForm(f => ({...f, images: [...f.images, '']}));
+  }
+
+  function updateImage(index, val) {
+    setForm(f => {
+      const newImages = [...f.images];
+      newImages[index] = val;
+      return { ...f, images: newImages };
+    });
+  }
+
+  function removeImage(index) {
+    setForm(f => {
+      const newImages = f.images.filter((_, i) => i !== index);
+      return { ...f, images: newImages };
+    });
+  }
+
+  async function handleImageUpload(e, index) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      alert("Only .jpg, .png, and .webp allowed.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800;
+        const MAX_HEIGHT = 800;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL(file.type, 0.8);
+        updateImage(index, dataUrl);
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Ensure category changes clear the subcategory if it's invalid
+  function handleCategoryChange(e) {
+    const newCat = e.target.value;
+    setForm(f => ({ ...f, category: newCat, subcategory: '' }));
+  }
 
   const filtered = products.filter(p => {
     if (cat && p.category!==cat) return false
@@ -33,6 +125,8 @@ export default function AdminProducts() {
   })
 
   const inp = 'bg-[#0f0a0d] border border-[#3a2535] text-[#d4c0ca] px-3 py-2 text-sm w-full outline-none focus:border-[#C47A92] rounded-sm'
+
+  const currentSubcats = SUBCATS_MAP[form.category] || []
 
   return (
     <div className="p-6">
@@ -55,7 +149,9 @@ export default function AdminProducts() {
           </tr></thead>
           <tbody>{filtered.map(p=>(
             <tr key={p.id} className="border-b border-[#3a2535]/50 hover:bg-white/5 cursor-pointer" onClick={()=>openEdit(p)}>
-              <td className="px-4 py-3"><img src={`/${p.image}`} alt={p.name} className="w-10 h-14 object-cover bg-[#3a2535]"/></td>
+              <td className="px-4 py-3">
+                <img src={`/${p.image || (p.images && p.images[0]) || ''}`} alt={p.name} className="w-10 h-14 object-cover bg-[#3a2535]"/>
+              </td>
               <td className="px-4 py-3 text-[13px] text-[#d4c0ca] font-medium">{p.name}{p.badge&&<span className="ml-2 text-[10px] bg-[#C47A92]/20 text-[#C47A92] px-1.5 py-0.5 rounded">{p.badge}</span>}</td>
               <td className="px-4 py-3"><span className="text-[11px] bg-[#C47A92]/20 text-[#C47A92] px-2 py-0.5 rounded capitalize">{p.category}</span></td>
               <td className="px-4 py-3 text-[13px]">PKR {p.price.toLocaleString()}</td>
@@ -79,22 +175,81 @@ export default function AdminProducts() {
               <button onClick={()=>setModal(false)} className="text-[#8a6878] text-xl hover:text-[#d4c0ca]">✕</button>
             </div>
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="col-span-2"><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Name *</label><input className={inp} value={form.name} onChange={e=>setF('name',e.target.value)} placeholder="Product name"/></div>
-              <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Category</label><select className={inp} value={form.category} onChange={e=>setF('category',e.target.value)}>{CATS.map(c=><option key={c} value={c} className="capitalize">{c}</option>)}</select></div>
-              <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">CSubcategory</label><select className={inp} value={form.category} onChange={e=>setF('category',e.target.value)}>{SUBCATS.map(c=><option key={c} value={c} className="capitalize">{c}</option>)}</select></div>
-              <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Price (PKR) *</label><input type="number" className={inp} value={form.price} onChange={e=>setF('price',e.target.value)}/></div>
-              <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Original Price</label><input type="number" className={inp} value={form.originalPrice} onChange={e=>setF('originalPrice',e.target.value)}/></div>
-              <div className="col-span-2"><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Main Image</label><input className={inp} value={form.image} onChange={e=>setF('image',e.target.value)} placeholder="images (1).jpeg"/></div>
-              <div className="col-span-2"><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Hover Image</label><input className={inp} value={form.image2} onChange={e=>setF('image2',e.target.value)} placeholder="images (2).jpeg"/></div>
-              <div className="col-span-2"><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Description</label><textarea className={`${inp} min-h-[70px]`} value={form.description} onChange={e=>setF('description',e.target.value)}/></div>
-              <div><label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Badge</label><input className={inp} value={form.badge} onChange={e=>setF('badge',e.target.value)} placeholder="New / Sale..."/></div>
+              <div className="col-span-2">
+                <label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Name *</label>
+                <input className={inp} value={form.name} onChange={e=>setF('name',e.target.value)} placeholder="Product name"/>
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Category</label>
+                <select className={inp} value={form.category} onChange={handleCategoryChange}>
+                  {CATS.map(c=><option key={c} value={c} className="capitalize">{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Subcategory</label>
+                <select className={inp} value={form.subcategory} onChange={e=>setF('subcategory',e.target.value)}>
+                  <option value="">None</option>
+                  {currentSubcats.map(c => <option key={c.slug || c.value} value={c.slug || c.value}>{c.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Price (PKR) *</label>
+                <input type="number" className={inp} value={form.price} onChange={e=>setF('price',e.target.value)}/>
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Original Price</label>
+                <input type="number" className={inp} value={form.originalPrice} onChange={e=>setF('originalPrice',e.target.value)}/>
+              </div>
+              
+              {/* Dynamic Images Array */}
+              <div className="col-span-2 bg-black/20 p-4 border border-[#3a2535] rounded">
+                <div className="flex justify-between items-center mb-3">
+                  <label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878]">Images ({form.images.length}/6)</label>
+                  {form.images.length < 6 && (
+                    <button onClick={addImageField} className="text-[10px] uppercase tracking-widest text-[#C47A92] hover:text-[#d4c0ca]">+ Add Image</button>
+                  )}
+                </div>
+                {form.images.map((img, i) => (
+                  <div key={i} className="flex gap-4 mb-3 items-center bg-[#150d12] p-3 border border-[#3a2535] rounded">
+                    <div className="w-16 h-16 bg-[#0f0a0d] border border-[#3a2535] flex-shrink-0 flex items-center justify-center overflow-hidden">
+                      {img ? (
+                        <img src={img.startsWith('data:') ? img : `/${img}`} alt="preview" className="w-full h-full object-cover"/>
+                      ) : (
+                        <span className="text-[10px] text-[#8a6878] uppercase tracking-wider">No Img</span>
+                      )}
+                    </div>
+                    <div className="flex-1 flex flex-col gap-2">
+                      <div className="flex gap-2 items-center">
+                        <label className="bg-[#3a2535] text-[#d4c0ca] px-4 py-2 text-[11px] cursor-pointer hover:bg-[#C47A92] hover:text-white transition-colors border border-[#3a2535] whitespace-nowrap">
+                          <input type="file" accept=".jpg,.png,.jpeg,.webp" className="hidden" onChange={(e) => handleImageUpload(e, i)} />
+                          Browse File
+                        </label>
+                        <input className={`${inp} flex-1 m-0`} value={img} onChange={e => updateImage(i, e.target.value)} placeholder={`Or paste URL / image name`}/>
+                      </div>
+                    </div>
+                    {form.images.length > 1 && (
+                      <button onClick={() => removeImage(i)} className="px-3 py-2 bg-red-400/10 text-red-400 border border-red-400/30 hover:bg-red-400 hover:text-white transition-colors h-[38px]">✕</button>
+                    )}
+                  </div>
+                ))}
+                <p className="text-[10px] text-[#8a6878] mt-2">First image is the Main Image, second is the Hover Image. Click 'Browse File' to upload.</p>
+              </div>
+
+              <div className="col-span-2">
+                <label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Description</label>
+                <textarea className={`${inp} min-h-[70px]`} value={form.description} onChange={e=>setF('description',e.target.value)}/>
+              </div>
+              <div>
+                <label className="block text-[10px] uppercase tracking-[.1em] text-[#8a6878] mb-1">Badge</label>
+                <input className={inp} value={form.badge} onChange={e=>setF('badge',e.target.value)} placeholder="New / Sale..."/>
+              </div>
               <div className="flex gap-5 items-center pt-4">
                 <label className="flex items-center gap-2 text-sm text-[#d4c0ca] cursor-pointer"><input type="checkbox" checked={form.inStock} onChange={e=>setF('inStock',e.target.checked)} className="accent-[#C47A92]"/> In Stock</label>
                 <label className="flex items-center gap-2 text-sm text-[#d4c0ca] cursor-pointer"><input type="checkbox" checked={form.featured} onChange={e=>setF('featured',e.target.checked)} className="accent-[#C47A92]"/> Featured</label>
               </div>
             </div>
-            <div className="flex gap-3 px-6 pb-6">
-              <button onClick={save} className="bg-[#C47A92] text-white px-5 py-2 text-sm hover:bg-[#7A3B52] transition-colors">Save</button>
+            <div className="flex gap-3 px-6 pb-6 mt-4">
+              <button onClick={save} className="bg-[#C47A92] text-white px-5 py-2 text-sm hover:bg-[#7A3B52] transition-colors">Save Product</button>
               <button onClick={()=>setModal(false)} className="bg-white/5 border border-[#3a2535] text-[#8a6878] px-5 py-2 text-sm hover:text-[#d4c0ca] transition-colors">Cancel</button>
               {editId && <button onClick={del} className="ml-auto bg-red-400/10 border border-red-400/30 text-red-400 px-5 py-2 text-sm hover:bg-red-400 hover:text-white transition-colors">Delete</button>}
             </div>

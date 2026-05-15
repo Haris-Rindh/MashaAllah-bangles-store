@@ -65,6 +65,7 @@ export default function AdminLayout() {
           <p className="px-6 py-2 text-[10px] text-[#8a6878] uppercase tracking-[.14em]">Main</p>
           <NavItem to="/admin"          icon="⊞" label="Dashboard"/>
           <NavItem to="/admin/products" icon="◈" label="Products"/>
+          <NavItem to="/admin/categories" icon="▤" label="Categories"/>
           <NavItem to="/admin/orders"   icon="⊡" label="Orders"/>
           <p className="px-6 py-2 mt-2 text-[10px] text-[#8a6878] uppercase tracking-[.14em]">Store</p>
           <a href="/" target="_blank" className="flex items-center gap-3 px-6 py-3 text-[13px] text-[#8a6878] hover:text-[#d4c0ca] transition-colors">⌂ View Storefront ↗</a>
