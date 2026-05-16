@@ -139,6 +139,9 @@ export default function Header() {
             <button onClick={() => navigate('/search')} className="p-1.5 transition-colors text-swa-dark hover:opacity-60" aria-label="Search">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </button>
+            <Link to="/account" className="p-1.5 transition-colors text-swa-dark hover:opacity-60" aria-label="Account">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </Link>
             <Link to="/cart" className="p-1.5 relative transition-colors text-swa-dark hover:opacity-60" aria-label="Cart">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
               {count > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-swa-dark text-white text-[9px] font-bold rounded-full flex items-center justify-center">{count > 9 ? '9+' : count}</span>}
@@ -178,7 +181,8 @@ export default function Header() {
           ))}
           <div className="mt-6 px-6 pb-10">
             <Link to="/products" className="block w-full text-center bg-swa-dark text-white py-3.5 text-[10px] uppercase tracking-[.15em] font-bold hover:bg-black/80 transition-colors mb-3" onClick={() => setDrawerOpen(false)}>All Products</Link>
-            <Link to="/cart" className="block w-full text-center border border-swa-dark text-swa-dark py-3.5 text-[10px] uppercase tracking-[.15em] font-bold hover:bg-swa-gray transition-colors" onClick={() => setDrawerOpen(false)}>Bag ({count})</Link>
+            <Link to="/cart" className="block w-full text-center border border-swa-dark text-swa-dark py-3.5 text-[10px] uppercase tracking-[.15em] font-bold hover:bg-swa-gray transition-colors mb-3" onClick={() => setDrawerOpen(false)}>Bag ({count})</Link>
+            <Link to="/account" className="block w-full text-center border border-swa-dark text-swa-dark py-3.5 text-[10px] uppercase tracking-[.15em] font-bold hover:bg-swa-gray transition-colors" onClick={() => setDrawerOpen(false)}>My Account</Link>
           </div>
         </div>
       </nav>

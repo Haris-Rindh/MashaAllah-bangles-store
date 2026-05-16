@@ -1,5 +1,5 @@
 // localStorage-based store — no backend required
-const KEYS = { products:'mab_products', cart:'mab_cart', orders:'mab_orders', wishlist:'mab_wishlist', categories:'mab_categories' }
+const KEYS = { products:'mab_products', cart:'mab_cart', orders:'mab_orders', wishlist:'mab_wishlist', categories:'mab_categories', users:'mab_users', currentUser:'mab_currentUser' }
 export const WHATSAPP = '923017506498'
 
 const DEFAULT_CATS = [
@@ -36,8 +36,36 @@ function getProductById(id) { return getProducts().find(p=>p.id===id); }
 function getByCategory(cat) { return getProducts().filter(p=>p.category===cat.toLowerCase()); }
 function searchProducts(q)  { const t=q.toLowerCase(); return getProducts().filter(p=>p.name.toLowerCase().includes(t)||p.category.includes(t)||(p.description||'').toLowerCase().includes(t)); }
 
-function getCart()    { return JSON.parse(localStorage.getItem(KEYS.cart)||'[]'); }
-function saveCart(c)  { localStorage.setItem(KEYS.cart, JSON.stringify(c)); }
+function getUsers() { return JSON.parse(localStorage.getItem(KEYS.users)||'[]'); }
+function saveUsers(u) { localStorage.setItem(KEYS.users, JSON.stringify(u)); }
+function registerUser(name, email, password) {
+  const users = getUsers();
+  if (users.find(u => u.email === email)) throw new Error('Email already registered');
+  const newUser = { id: 'U'+Date.now(), name, email, password, createdAt: Date.now() };
+  users.push(newUser);
+  saveUsers(users);
+  return newUser;
+}
+function loginUser(email, password) {
+  const users = getUsers();
+  const user = users.find(u => u.email === email && u.password === password);
+  if (!user) throw new Error('Invalid email or password');
+  localStorage.setItem(KEYS.currentUser, JSON.stringify(user));
+  
+  const guestCart = JSON.parse(localStorage.getItem(KEYS.cart)||'[]');
+  if (guestCart.length > 0) {
+     localStorage.setItem(KEYS.cart+'_'+user.id, JSON.stringify(guestCart));
+     localStorage.removeItem(KEYS.cart);
+  }
+  return user;
+}
+function logoutUser() { localStorage.removeItem(KEYS.currentUser); }
+function getCurrentUser() { return JSON.parse(localStorage.getItem(KEYS.currentUser)); }
+
+function getCartKey() { const u = getCurrentUser(); return u ? KEYS.cart+'_'+u.id : KEYS.cart; }
+
+function getCart()    { return JSON.parse(localStorage.getItem(getCartKey())||'[]'); }
+function saveCart(c)  { localStorage.setItem(getCartKey(), JSON.stringify(c)); }
 function addToCart(id,qty=1){ const cart=getCart(); const i=cart.findIndex(x=>x.id===id); if(i>-1)cart[i].qty+=qty; else{const p=getProductById(id);if(p)cart.push({id:p.id,name:p.name,price:p.price,image:p.image,qty,category:p.category});} saveCart(cart); }
 function removeFromCart(id){ saveCart(getCart().filter(i=>i.id!==id)); }
 function updateQty(id,qty){ if(qty<1)return removeFromCart(id); saveCart(getCart().map(i=>i.id===id?{...i,qty}:i)); }
@@ -46,17 +74,19 @@ function cartCount()  { return getCart().reduce((s,i)=>s+i.qty,0); }
 function clearCart()  { saveCart([]); }
 
 function getOrders()       { return JSON.parse(localStorage.getItem(KEYS.orders)||'[]'); }
-function saveOrder(order)  { const orders=getOrders(); order.id='ORD-'+Date.now(); order.createdAt=Date.now(); order.status='pending'; orders.unshift(order); localStorage.setItem(KEYS.orders,JSON.stringify(orders)); return order; }
+function saveOrder(order)  { const orders=getOrders(); order.id='ORD-'+Date.now(); order.createdAt=Date.now(); order.status='pending'; const u = getCurrentUser(); if(u) order.userId = u.id; orders.unshift(order); localStorage.setItem(KEYS.orders,JSON.stringify(orders)); return order; }
 function updateStatus(id,status){ localStorage.setItem(KEYS.orders,JSON.stringify(getOrders().map(o=>o.id===id?{...o,status}:o))); }
+function getUserOrders()   { const u = getCurrentUser(); return u ? getOrders().filter(o=>o.userId===u.id) : []; }
 
-function getWishlist()    { return JSON.parse(localStorage.getItem(KEYS.wishlist)||'[]'); }
-function toggleWishlist(id){ const w=getWishlist(); const i=w.indexOf(id); if(i>-1)w.splice(i,1);else w.push(id); localStorage.setItem(KEYS.wishlist,JSON.stringify(w)); return i===-1; }
+function getWishlistKey() { const u = getCurrentUser(); return u ? KEYS.wishlist+'_'+u.id : KEYS.wishlist; }
+function getWishlist()    { return JSON.parse(localStorage.getItem(getWishlistKey())||'[]'); }
+function toggleWishlist(id){ const w=getWishlist(); const i=w.indexOf(id); if(i>-1)w.splice(i,1);else w.push(id); localStorage.setItem(getWishlistKey(),JSON.stringify(w)); return i===-1; }
 function isWishlisted(id) { return getWishlist().includes(id); }
 
-function buildWAOrder(customer,cart){ const baseUrl = 'https://mashallahbanglesstore.vercel.app'; const items=cart.map(i=>{ const imgUrl = (i.image && i.image.startsWith('data:')) ? '' : `\n  Image: ${baseUrl}/${i.image}`; return `• ${i.name} x${i.qty} = PKR ${(i.price*i.qty).toLocaleString()}${imgUrl}` }).join('\n\n'); const total=cart.reduce((s,i)=>s+i.price*i.qty,0); const msg=`🌸 *New Order — MashaAllah Bangles & Cosmetic*\n\n*Customer:* ${customer.name}\n*Phone:* ${customer.phone}\n*Address:* ${customer.address}, ${customer.city}\n\n*Items:*\n${items}\n\n*Total: PKR ${total.toLocaleString()}*\n\n_Order placed via website_`; return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`; }
+function buildWAOrder(customer,cart){ const baseUrl = window.location.origin; const items=cart.map(i=>{ const prodLink = `\n  Link: ${baseUrl}/product/${i.id}`; return `• ${i.name} x${i.qty} = PKR ${(i.price*i.qty).toLocaleString()}${prodLink}` }).join('\n\n'); const total=cart.reduce((s,i)=>s+i.price*i.qty,0); const msg=`🌸 *New Order — MashaAllah Bangles & Cosmetic*\n\n*Customer:* ${customer.name}\n*Phone:* ${customer.phone}\n*Address:* ${customer.address}, ${customer.city}\n\n*Items:*\n${items}\n\n*Total: PKR ${total.toLocaleString()}*\n\n_Order placed via website_`; return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`; }
 
 export const fmt      = n => 'PKR ' + Number(n).toLocaleString()
 export const discount = (orig,sale) => orig>sale ? Math.round((1-sale/orig)*100)+'% off' : ''
 export const img      = name => `/${name}`   // images served from public (assests folder)
 
-export default { getCategories,saveCategories,getProducts,addProduct,updateProduct,deleteProduct,getProductById,getByCategory,searchProducts,getCart,addToCart,removeFromCart,updateQty,cartTotal,cartCount,clearCart,getOrders,saveOrder,updateStatus,getWishlist,toggleWishlist,isWishlisted,buildWAOrder,fmt,discount,img }
+export default { getCategories,saveCategories,getProducts,addProduct,updateProduct,deleteProduct,getProductById,getByCategory,searchProducts,getCart,addToCart,removeFromCart,updateQty,cartTotal,cartCount,clearCart,getOrders,saveOrder,updateStatus,getUserOrders,getWishlist,toggleWishlist,isWishlisted,buildWAOrder,fmt,discount,img,getUsers,saveUsers,registerUser,loginUser,logoutUser,getCurrentUser }

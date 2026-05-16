@@ -5,7 +5,7 @@ import Store from '../store'
 
 export default function Products() {
   const highestPrice = useMemo(() => Math.max(5000, ...Store.getProducts().map(p => p.price)), [])
-  const [cats,    setCats]    = useState([])
+  const [cat,     setCat]     = useState('all')
   const [maxP,    setMaxP]    = useState(highestPrice)
   const [stock,   setStock]   = useState(false)
   const [sort,    setSort]    = useState('default')
@@ -14,7 +14,7 @@ export default function Products() {
 
   const products = useMemo(() => {
     let p = Store.getProducts()
-    if (cats.length)  p = p.filter(x => cats.includes(x.category))
+    if (cat !== 'all')  p = p.filter(x => x.category === cat)
     p = p.filter(x => x.price <= maxP)
     if (stock)        p = p.filter(x => x.inStock)
     if (search)       p = p.filter(x => x.name.toLowerCase().includes(search.toLowerCase()))
@@ -22,9 +22,7 @@ export default function Products() {
     if (sort==='price-desc') p.sort((a,b)=>b.price-a.price)
     if (sort==='name')       p.sort((a,b)=>a.name.localeCompare(b.name))
     return p
-  }, [cats, maxP, stock, sort, search])
-
-  function toggleCat(c) { setCats(prev => prev.includes(c) ? prev.filter(x=>x!==c) : [...prev,c]) }
+  }, [cat, maxP, stock, sort, search])
 
   const CAT_LIST = ['jewellery','bangles','cosmetics','perfumes','baby','clothing']
 
@@ -44,9 +42,13 @@ export default function Products() {
           </div>
           <div className="mb-8 pb-6 border-b border-gray-200">
             <h4 className="text-[10px] uppercase tracking-[.2em] text-swa-dark font-bold mb-4">Category</h4>
+            <label className="flex items-center gap-3 text-[11px] uppercase tracking-wider text-swa-dark cursor-pointer mb-3">
+              <input type="radio" name="category" checked={cat === 'all'} onChange={() => setCat('all')} className="accent-swa-dark w-3 h-3"/>
+              All
+            </label>
             {CAT_LIST.map(c => (
               <label key={c} className="flex items-center gap-3 text-[11px] uppercase tracking-wider text-swa-dark cursor-pointer mb-3">
-                <input type="checkbox" checked={cats.includes(c)} onChange={() => toggleCat(c)} className="accent-swa-dark w-3 h-3"/>
+                <input type="radio" name="category" checked={cat === c} onChange={() => setCat(c)} className="accent-swa-dark w-3 h-3"/>
                 {c}
               </label>
             ))}
@@ -62,7 +64,7 @@ export default function Products() {
               <input type="checkbox" checked={stock} onChange={e=>setStock(e.target.checked)} className="accent-swa-dark w-3 h-3"/> In Stock Only
             </label>
           </div>
-          <button onClick={()=>{setCats([]);setMaxP(highestPrice);setStock(false);setSort('default');setSearch('');setMobileFilter(false)}}
+          <button onClick={()=>{setCat('all');setMaxP(highestPrice);setStock(false);setSort('default');setSearch('');setMobileFilter(false)}}
             className="w-full bg-swa-dark text-white py-3.5 text-[10px] font-bold tracking-[.2em] uppercase hover:bg-black/80 transition-colors">Reset Filters</button>
           
           {mobileFilter && <button onClick={() => setMobileFilter(false)} className="w-full mt-3 border border-swa-dark text-swa-dark py-3.5 text-[10px] font-bold tracking-[.2em] uppercase hover:bg-swa-gray lg:hidden transition-colors">View Results</button>}
@@ -89,7 +91,7 @@ export default function Products() {
           ) : (
             <div className="text-center py-32 text-gray">
               <p className="text-sm uppercase tracking-widest mb-4">No products found.</p>
-              <button onClick={()=>{setCats([]);setMaxP(highestPrice);setStock(false);setSort('default');setSearch('');}} className="text-swa-dark border-b border-swa-dark text-[10px] uppercase tracking-widest font-bold">Clear filters</button>
+              <button onClick={()=>{setCat('all');setMaxP(highestPrice);setStock(false);setSort('default');setSearch('');}} className="text-swa-dark border-b border-swa-dark text-[10px] uppercase tracking-widest font-bold">Clear filters</button>
             </div>
           )}
         </main>

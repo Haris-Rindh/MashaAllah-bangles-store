@@ -10,11 +10,15 @@ import Search   from './pages/Search'
 import Cart     from './pages/Cart'
 import Checkout from './pages/Checkout'
 import Wishlist from './pages/Wishlist'
+import Login    from './pages/Login'
+import Signup   from './pages/Signup'
+import Account  from './pages/Account'
 import AdminLayout   from './admin/AdminLayout'
 import Dashboard     from './admin/Dashboard'
 import AdminProducts from './admin/AdminProducts'
 import AdminCategories from './admin/AdminCategories'
 import AdminOrders   from './admin/AdminOrders'
+import AdminCustomers from './admin/AdminCustomers'
 
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
@@ -29,6 +33,9 @@ function PageTitle() {
       '/checkout': 'Checkout - MashaAllah',
       '/search': 'Search - MashaAllah',
       '/wishlist': 'Wishlist - MashaAllah',
+      '/login': 'Login - MashaAllah',
+      '/signup': 'Sign Up - MashaAllah',
+      '/account': 'My Account - MashaAllah',
       '/admin': 'Admin Dashboard - MashaAllah'
     }
     const base = titles[loc.pathname] || 'MashaAllah Bangles & Cosmetic'
@@ -59,6 +66,9 @@ function StoreFront() {
           <Route path="/cart"             element={<Cart/>}/>
           <Route path="/checkout"         element={<Checkout/>}/>
           <Route path="/wishlist"         element={<Wishlist/>}/>
+          <Route path="/login"            element={<Login/>}/>
+          <Route path="/signup"           element={<Signup/>}/>
+          <Route path="/account"          element={<Account/>}/>
         </Routes>
       </main>
       <Footer/>
@@ -78,6 +88,7 @@ export default function App() {
             <Route path="products" element={<AdminProducts/>}/>
             <Route path="categories" element={<AdminCategories/>}/>
             <Route path="orders"   element={<AdminOrders/>}/>
+            <Route path="customers" element={<AdminCustomers/>}/>
           </Route>
           <Route path="/*" element={<StoreFront/>}/>
         </Routes>
