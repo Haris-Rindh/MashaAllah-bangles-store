@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import ProductCard from '../components/ProductCard'
@@ -5,7 +6,14 @@ import Store from '../store'
 
 export default function Wishlist() {
   const { wishlist } = useCart()
-  const products = Store.getProducts().filter(p => wishlist.includes(p.id))
+  const [allProducts, setAllProducts] = useState([])
+
+  useEffect(() => {
+    const unsub = Store.onProductsSnapshot(setAllProducts)
+    return () => unsub()
+  }, [])
+
+  const products = allProducts.filter(p => wishlist.includes(p.id))
 
   return (
     <div className="pt-28 min-h-screen bg-white">

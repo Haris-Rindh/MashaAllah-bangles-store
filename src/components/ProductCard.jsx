@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { fmt, discount } from '../store'
+import Store from '../store'
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart()
@@ -9,8 +10,8 @@ export default function ProductCard({ product }) {
     <div className="prod-card group flex flex-col h-full bg-white text-swa-dark">
       <div className="relative overflow-hidden prod-img-wrap mb-4">
         <Link to={`/product/${product.id}`} className="block w-full h-full">
-          <img src={`/${product.image}`} alt={product.name} className="prod-img-main"/>
-          {product.image2 && <img src={`/${product.image2}`} alt={product.name} className="prod-img-hover"/>}
+          <img src={Store.img(product.image)} alt={product.name} className="prod-img-main"/>
+          {product.image2 && <img src={Store.img(product.image2)} alt={product.name} className="prod-img-hover"/>}
           
           {/* Badges */}
           <div className="absolute top-2 lg:top-3 left-2 lg:left-3 flex flex-col gap-1 z-10">

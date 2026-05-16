@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../context/CartContext'
 import { fmt, discount } from '../store'
@@ -12,25 +12,43 @@ function Toast({ msg }) {
 
 export default function Product() {
   const { id }   = useParams()
-  const product  = Store.getProductById(id)
   const { addToCart, toggleWish, wishlist } = useCart()
   const navigate = useNavigate()
-  const [qty,      setQty]   = useState(1)
-  const [imgIdx,   setImg]   = useState(0)
-  const [toast,    setToast] = useState('')
+  const [product,  setProduct] = useState(null)
+  const [related,  setRelated] = useState([])
+  const [notFound, setNotFound]= useState(false)
+  const [qty,      setQty]     = useState(1)
+  const [imgIdx,   setImg]     = useState(0)
+  const [toast,    setToast]   = useState('')
 
-  if (!product) return (
+  useEffect(() => {
+    setProduct(null); setNotFound(false); setImg(0)
+    Store.getProductById(id).then(p => {
+      if (!p) { setNotFound(true); return }
+      setProduct(p)
+      Store.getByCategory(p.category).then(all => {
+        setRelated(all.filter(x => x.id !== id).slice(0, 4))
+      })
+    })
+  }, [id])
+
+  if (notFound) return (
     <div className="pt-44 text-center py-20 text-swa-dark">
       <h2 className="font-display text-4xl mb-4 uppercase tracking-widest">Product Not Found</h2>
       <Link to="/products" className="text-gray underline text-[10px] tracking-widest uppercase">Browse Products</Link>
     </div>
   )
 
-  const imgs = product.images?.length > 0 
-    ? product.images 
-    : [product.image, product.image2 || product.image];
-  const wished  = wishlist.includes(product.id)
-  const related = Store.getByCategory(product.category).filter(p => p.id !== product.id).slice(0, 4)
+  if (!product) return (
+    <div className="pt-44 text-center py-20 text-swa-dark">
+      <p className="text-[11px] uppercase tracking-widest font-bold text-gray animate-pulse">Loading product...</p>
+    </div>
+  )
+
+  const imgs = product.images?.length > 0
+    ? product.images
+    : [product.image, product.image2 || product.image]
+  const wished = wishlist.includes(product.id)
 
   function showToast(msg) { setToast(msg); setTimeout(() => setToast(''), 2500) }
 
@@ -45,12 +63,12 @@ export default function Product() {
         {/* Gallery */}
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, ease: "easeOut" }}>
           <div className="bg-swa-gray/30 aspect-[3/4] overflow-hidden mb-4 cursor-zoom-in">
-            <img src={`/${imgs[imgIdx]}`} alt={product.name} className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"/>
+            <img src={Store.img(imgs[imgIdx])} alt={product.name} className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"/>
           </div>
           <div className="flex gap-3 flex-wrap mt-4">
             {imgs.map((img, i) => (
               <button key={i} onClick={() => setImg(i)} className={`w-20 h-24 overflow-hidden border transition-colors ${imgIdx===i ? 'border-swa-dark' : 'border-transparent hover:border-gray-300'}`}>
-                <img src={`/${img}`} alt={`view ${i+1}`} className="w-full h-full object-cover"/>
+                <img src={Store.img(img)} alt={`view ${i+1}`} className="w-full h-full object-cover"/>
               </button>
             ))}
           </div>

@@ -14,10 +14,10 @@ export default function Checkout() {
 
   function set(k, v) { setForm(f => ({...f, [k]: v})) }
 
-  function place(e) {
+  async function place(e) {
     e.preventDefault()
     if (!form.name||!form.phone||!form.address||!form.city) { setErr('Please fill all required (*) fields.'); return }
-    const order  = Store.saveOrder({ customer: form, items: cartItems, total })
+    const order  = await Store.saveOrder({ customer: form, items: cartItems, total })
     const waUrl  = Store.buildWAOrder(form, cartItems)
     window.open(waUrl, '_blank')
     Store.clearCart()

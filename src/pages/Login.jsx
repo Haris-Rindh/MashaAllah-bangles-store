@@ -8,10 +8,10 @@ export default function Login() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
     try {
-      store.loginUser(email, password)
+      await store.loginUser(email, password)
       navigate('/account')
     } catch (err) {
       setError(err.message)

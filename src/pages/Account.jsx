@@ -14,11 +14,12 @@ export default function Account() {
       navigate('/login')
     } else {
       setUser(currentUser)
-      setOrders(store.getUserOrders())
-      
+      // Fetch orders async
+      store.getUserOrders().then(orders => setOrders(orders))
+      // Fetch wishlist products async
       const wIds = store.getWishlist()
-      const wItems = wIds.map(id => store.getProductById(id)).filter(Boolean)
-      setWishlist(wItems)
+      Promise.all(wIds.map(id => store.getProductById(id)))
+        .then(items => setWishlist(items.filter(Boolean)))
     }
   }, [navigate])
 

@@ -9,11 +9,11 @@ export default function Signup() {
   const [error, setError] = useState('')
   const navigate = useNavigate()
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault()
     try {
-      store.registerUser(name, email, password)
-      store.loginUser(email, password)
+      await store.registerUser(name, email, password)
+      await store.loginUser(email, password)
       navigate('/account')
     } catch (err) {
       setError(err.message)

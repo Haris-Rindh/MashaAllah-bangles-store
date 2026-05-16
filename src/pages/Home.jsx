@@ -22,7 +22,15 @@ export default function Home() {
   const [slide, setSlide]    = useState(0)
   const [email, setEmail]    = useState('')
   const [joined, setJoined]  = useState(false)
-  const featured = Store.getProducts().filter(p => p.featured).slice(0, 8)
+  const [featured, setFeatured] = useState([])
+
+  useEffect(() => {
+    const unsub = Store.onProductsSnapshot(prods => {
+      Store.cacheProducts(prods)
+      setFeatured(prods.filter(p => p.featured).slice(0, 8))
+    })
+    return () => unsub()
+  }, [])
 
   const fadeUp = {
     initial: { opacity: 0, y: 40 },

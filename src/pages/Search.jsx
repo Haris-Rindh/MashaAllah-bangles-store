@@ -9,16 +9,22 @@ export default function Search() {
   const query = new URLSearchParams(location.search).get('q') || ''
   const [search, setSearch] = useState(query)
   const [val, setVal] = useState(query)
+  const [allProducts, setAllProducts] = useState([])
+
+  useEffect(() => {
+    const unsub = Store.onProductsSnapshot(setAllProducts)
+    return () => unsub()
+  }, [])
 
   const products = useMemo(() => {
     if (!search.trim()) return []
     const q = search.toLowerCase()
-    return Store.getProducts().filter(p => 
-      p.name.toLowerCase().includes(q) || 
+    return allProducts.filter(p =>
+      p.name.toLowerCase().includes(q) ||
       p.category.toLowerCase().includes(q) ||
       (p.subcategory && p.subcategory.toLowerCase().includes(q))
     )
-  }, [search])
+  }, [search, allProducts])
 
   useEffect(() => {
     window.scrollTo(0, 0)

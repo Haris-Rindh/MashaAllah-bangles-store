@@ -1,28 +1,40 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 import Store from '../store'
 
 export default function Products() {
-  const highestPrice = useMemo(() => Math.max(5000, ...Store.getProducts().map(p => p.price)), [])
+  const [allProducts, setAllProducts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const highestPrice = useMemo(() => Math.max(5000, ...allProducts.map(p => p.price), 5000), [allProducts])
   const [cat,     setCat]     = useState('all')
-  const [maxP,    setMaxP]    = useState(highestPrice)
+  const [maxP,    setMaxP]    = useState(5000)
   const [stock,   setStock]   = useState(false)
   const [sort,    setSort]    = useState('default')
   const [search,  setSearch]  = useState('')
   const [mobileFilter, setMobileFilter] = useState(false)
 
+  useEffect(() => {
+    const unsub = Store.onProductsSnapshot(prods => {
+      Store.cacheProducts(prods)
+      setAllProducts(prods)
+      setMaxP(prev => Math.max(prev, ...prods.map(p => p.price), 5000))
+      setLoading(false)
+    })
+    return () => unsub()
+  }, [])
+
   const products = useMemo(() => {
-    let p = Store.getProducts()
+    let p = allProducts
     if (cat !== 'all')  p = p.filter(x => x.category === cat)
     p = p.filter(x => x.price <= maxP)
     if (stock)        p = p.filter(x => x.inStock)
     if (search)       p = p.filter(x => x.name.toLowerCase().includes(search.toLowerCase()))
-    if (sort==='price-asc')  p.sort((a,b)=>a.price-b.price)
-    if (sort==='price-desc') p.sort((a,b)=>b.price-a.price)
-    if (sort==='name')       p.sort((a,b)=>a.name.localeCompare(b.name))
+    if (sort==='price-asc')  p = [...p].sort((a,b)=>a.price-b.price)
+    if (sort==='price-desc') p = [...p].sort((a,b)=>b.price-a.price)
+    if (sort==='name')       p = [...p].sort((a,b)=>a.name.localeCompare(b.name))
     return p
-  }, [cat, maxP, stock, sort, search])
+  }, [allProducts, cat, maxP, stock, sort, search])
 
   const CAT_LIST = ['jewellery','bangles','cosmetics','perfumes','baby','clothing']
 

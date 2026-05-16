@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useParams, useSearchParams, Link } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 import Store from '../store'
@@ -16,9 +16,14 @@ export default function Category() {
   const { cat }          = useParams()
   const [params]         = useSearchParams()
   const [activeSub, setSub] = useState(params.get('sub') || '')
+  const [products, setProducts] = useState([])
   const meta = CAT_META[cat] || { label: cat, desc: '' }
 
-  const products = useMemo(() => Store.getByCategory(cat), [cat])
+  useEffect(() => {
+    setProducts([]) // reset on category change
+    Store.getByCategory(cat).then(setProducts)
+  }, [cat])
+
   const subcats  = useMemo(() => [...new Set(products.map(p=>p.subcategory).filter(Boolean))], [products])
   const filtered = useMemo(() => activeSub ? products.filter(p=>p.subcategory===activeSub) : products, [products, activeSub])
 
